@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import {connectDB} from './config/db.js';
 import { typeDefs } from './schema/typeDefs.js';
 import { resolvers } from './schema/resolvers.js';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 import cors from 'cors';
 
 dotenv.config();
@@ -14,12 +15,13 @@ async function startServer() {
     const app = express();
     const server = new ApolloServer({
         typeDefs: await typeDefs,
-        resolvers: await resolvers
+        resolvers: await resolvers,
+        csrfPrevention: false
     });
 
     await server.start();
 
-    app.use('/graphql', cors(), express.json(), expressMiddleware(server));
+    app.use('/graphql', cors(), graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }), express.json(), expressMiddleware(server));
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {

@@ -12,15 +12,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@as-integrations/express5": "^1.1.2",
     "@apollo/server": "^5.4.0",
+    "@as-integrations/express5": "^1.1.2",
     "body-parser": "^2.2.2",
+    "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "graphql": "^16.13.0",
     "graphql-http": "^1.22.4",
-    "mongoose": "^9.2.2"
+    "graphql-upload": "^17.0.0",
+    "mongoose": "^9.2.2",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

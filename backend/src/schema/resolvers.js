@@ -1,6 +1,11 @@
 import { User } from "../models/user.model.js";
+import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
+import cloudinary from "../config/cloudnairy.js";
 
 export const resolvers = {
+
+    Upload: GraphQLUpload,
+
     Query: {
         getUsers: async () => {
             try {
@@ -18,31 +23,86 @@ export const resolvers = {
         }
     },
     Mutation: {
-        createUser: async (_, { name, email, age }) => {
+        createUser: async (_, { name, email, age, profileImage }) => {
             try {
+                let profileImageUrl = "";
+
+                if (profileImage) {
+                    const { createReadStream } = await profileImage;
+                    const stream = createReadStream();
+
+                    const uploadResult = await new Promise((resolve, reject) => {
+                        const cloudinaryStream = cloudinary.uploader.upload_stream(
+                            { folder: "user-profiles" },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+
+                        stream.pipe(cloudinaryStream);
+                    });
+
+                    profileImageUrl = uploadResult.secure_url;
+                }
+
                 const existingUser = await User.findOne({ email });
                 if (existingUser) {
                     throw new Error("Email already in use");
                 }
 
-                const newUser = new User({ name, email, age });
+                const newUser = new User({
+                    name,
+                    email,
+                    age,
+                    profileImage: profileImageUrl
+                });
+
                 return await newUser.save();
+
             } catch (error) {
                 throw new Error("Error creating user: " + error.message);
             }
         },
-        updateUser: async (_, { id, name, email, age }) => {
+        updateUser: async (_, { id, name, email, age, profileImage }) => {
             try {
+                let profileImageUrl;
+
+                if (profileImage) {
+                    const { createReadStream } = await profileImage;
+                    const stream = createReadStream();
+
+                    const uploadResult = await new Promise((resolve, reject) => {
+                        const cloudinaryStream = cloudinary.uploader.upload_stream(
+                            { folder: "user-profiles" },
+                            (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            }
+                        );
+
+                        stream.pipe(cloudinaryStream);
+                    });
+
+                    profileImageUrl = uploadResult.secure_url;
+                }
+
                 const updatedUser = await User.findByIdAndUpdate(
                     id,
-                    { name, email, age },
+                    {
+                        ...(name && { name }),
+                        ...(email && { email }),
+                        ...(age && { age }),
+                        ...(profileImageUrl && { profileImage: profileImageUrl })
+                    },
                     { new: true }
                 );
+
                 return updatedUser;
+
             } catch (error) {
                 throw new Error("Error updating user: " + error.message);
             }
-
         },
         deleteUser: async (_, { id }) => {
             try {   

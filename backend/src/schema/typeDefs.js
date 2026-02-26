@@ -1,9 +1,12 @@
 export const typeDefs = `
+    scalar Upload
+
     type User {
         id: ID!
         name: String!
         email: String!
         age: Int!
+        profileImage: String
     }
 
     type Query {
@@ -12,8 +15,8 @@ export const typeDefs = `
     }
     
     type Mutation {
-        createUser(name: String!, email: String!, age: Int!): User!
-        updateUser(id: ID!, name: String, email: String, age: Int): User
+        createUser(name: String!, email: String!, age: Int!, profileImage: Upload): User!
+        updateUser(id: ID!, name: String, email: String, age: Int, profileImage: Upload): User
         deleteUser(id: ID!): User
     }
 `;

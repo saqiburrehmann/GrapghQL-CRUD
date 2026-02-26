@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number,
         required: true
+    },
+    profileImage: {
+        type: String,
+        default: ""
     }
 }, { timestamps: true });
 
