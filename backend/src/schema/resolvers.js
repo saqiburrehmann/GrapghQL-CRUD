@@ -1,6 +1,10 @@
 import { User } from "../models/user.model.js";
+import { PubSub } from 'graphql-subscriptions';
 import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
 import cloudinary from "../config/cloudnairy.js";
+
+const pubsub = new PubSub();
+const USER_CREATED = 'USER_CREATED';
 
 export const resolvers = {
 
@@ -58,7 +62,10 @@ export const resolvers = {
                     profileImage: profileImageUrl
                 });
 
-                return await newUser.save();
+                const savedUser = await newUser.save();
+                pubsub.publish(USER_CREATED, { userCreated: savedUser });
+
+                return savedUser;
 
             } catch (error) {
                 throw new Error("Error creating user: " + error.message);
@@ -111,6 +118,11 @@ export const resolvers = {
             } catch (error) {
                 throw new Error("Error deleting user: " + error.message);
             }
+        }
+    },
+    Subscription: {
+        userCreated: {
+            subscribe: () => pubsub.asyncIterator([USER_CREATED])
         }
     }
 }

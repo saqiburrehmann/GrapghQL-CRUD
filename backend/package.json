@@ -21,9 +21,12 @@
     "express": "^5.2.1",
     "graphql": "^16.13.0",
     "graphql-http": "^1.22.4",
+    "graphql-subscriptions": "^1.2.1",
     "graphql-upload": "^17.0.0",
+    "graphql-ws": "^6.0.7",
     "mongoose": "^9.2.2",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -19,4 +19,8 @@ export const typeDefs = `
         updateUser(id: ID!, name: String, email: String, age: Int, profileImage: Upload): User
         deleteUser(id: ID!): User
     }
+
+    type Subscription {
+        userCreated: User!
+    }
 `;
